@@ -1,0 +1,34 @@
+monitors:
+  foo:
+    name: I am a monitor with human readable name
+    type: SCRIPT_API
+    frequency: 60
+    locations:
+      - AWS_US_WEST_1
+      - AWS_EU_CENTRAL_1
+    status: disabled
+    alert_policy: PagerDuty
+    script_file:
+      name: "example/hello.js"
+  bar:
+    name: I am a monitor with templated script
+    type: SCRIPT_API
+    frequency: 60
+    locations:
+      - AWS_US_WEST_1
+    status: disabled
+    alert_policy: PagerDuty
+    script_file:
+      name: "example/templated.js.tpl"
+      template: jinja
+      context:
+        bar: CoffeeScript
+alert_policies:
+  test_policy:
+    incident_preference: PER_CONDITION
+  test_policy_default:
+    name: Test Policy with Default Incident Preference
+context:
+  foo: Username
+  bar: Javascript
+  baz: Says NI

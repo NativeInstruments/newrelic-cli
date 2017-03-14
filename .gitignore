@@ -1,0 +1,14 @@
+.idea
+*.pyc
+dist/*
+newrelic_cli.egg-info/*
+.DS_Store
+.cache/*
+.coverage
+cover/*
+.eggs/*
+build/*
+# Virtualenv folder
+.env/*
+# Tox stuff
+.tox/*
