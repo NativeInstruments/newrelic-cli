@@ -7,7 +7,7 @@ setup(
     name='newrelic-cli',
     version=__version__,
     description='Newrelic CLI client',
-    author='Native',
+    author='Native Instruments GmbH',
     packages=find_packages(),
     # production requirements
     install_requires=[
@@ -25,6 +25,7 @@ setup(
         'console_scripts': ['newrelic-cli=newrelic_cli.cli:main']
     },
     classifiers=[
-        'Private :: Do Not Upload'
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7'
     ],
 )
