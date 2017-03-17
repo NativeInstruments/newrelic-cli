@@ -25,6 +25,7 @@ setup(
         'console_scripts': ['newrelic-cli=newrelic_cli.cli:main']
     },
     classifiers=[
-        'License :: OSI Approved :: MIT License'
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7'
     ],
 )
