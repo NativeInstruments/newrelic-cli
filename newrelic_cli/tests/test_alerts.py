@@ -39,14 +39,14 @@ class NewRelicAlertClientTests(TestCase):
             ]
         }
         self.conditions_response = {
-          'synthetics_conditions': [
-            {
-              'id': self.condition_id,
-              'name': self.monitor_name,
-              'monitor_id': self.monitor_id,
-              'enabled': True
-            }
-          ]
+            'synthetics_conditions': [
+                {
+                    'id': self.condition_id,
+                    'name': self.monitor_name,
+                    'monitor_id': self.monitor_id,
+                    'enabled': True
+                }
+            ]
         }
         self.monitor_response = {
             'monitors': [
@@ -148,7 +148,7 @@ class NewRelicAlertClientTests(TestCase):
 
         # Alerts conditions endpoint mock with empty list of conditions
         conditions_response = {
-          "synthetics_conditions": []
+            "synthetics_conditions": []
         }
         mock.get(
             '{}/v2/alerts_synthetics_conditions.json?policy_id={}'
@@ -631,12 +631,12 @@ class NewRelicAlertClientTests(TestCase):
                 newrelic_cli.exceptions.ItemAlreadyExistsError,
                 '{}'.format(self.first_policy['name'])
         ):
-          self.client.create_alert_policy(self.first_policy['name'])
+            self.client.create_alert_policy(self.first_policy['name'])
 
     def test_delete_alert_policy_success(self, mock):
         mock.get(
             '{}/v2/alerts_policies.json?filter[name]={}'
-                .format(self.client.base_url, self.first_policy['name']),
+            .format(self.client.base_url, self.first_policy['name']),
             json=self.policy_response,
             status_code=200
         )
@@ -660,10 +660,10 @@ class NewRelicAlertClientTests(TestCase):
         )
         mock.delete(
             '{}/v2/alerts_policies/{}.json'
-                .format(self.client.base_url, self.first_policy['id'])
+            .format(self.client.base_url, self.first_policy['id'])
         )
         with self.assertRaisesRegexp(
                 newrelic_cli.exceptions.ItemNotFoundError,
                 '{}'.format(self.first_policy['name'])
         ):
-          self.client.delete_alert_policy(self.first_policy['name'])
+            self.client.delete_alert_policy(self.first_policy['name'])
