@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-import requests_mock
-
 import newrelic_cli.exceptions
 from newrelic_cli.alerts import AlertClient
+
+import requests_mock
 
 
 @requests_mock.mock()
