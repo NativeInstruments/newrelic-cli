@@ -1,10 +1,10 @@
 from unittest import TestCase
 
-import requests_mock
-from requests.exceptions import Timeout
-
 import newrelic_cli.exceptions
 from newrelic_cli.base import NewRelicBaseClient
+from requests.exceptions import Timeout
+
+import requests_mock
 
 
 @requests_mock.mock()

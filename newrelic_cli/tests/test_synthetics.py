@@ -1,10 +1,10 @@
 import base64
 from unittest import TestCase
 
-import requests_mock
-
 import newrelic_cli.exceptions
 from newrelic_cli.synthetics import SyntheticsClient
+
+import requests_mock
 
 
 @requests_mock.mock()
