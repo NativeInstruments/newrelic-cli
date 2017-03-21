@@ -15,7 +15,9 @@ Currently only Synthetics monitors and alerts are supported.
 Installation
 ============
 
-TBD: pip-based installation
+To install using pip::
+
+ $ pip install newrelic_cli
 
 To install from the source code::
 
