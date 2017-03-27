@@ -5,4 +5,5 @@ python:
 install:
   - pip install tox
 # command to run tests
-script: tox
+script:
+  - tox -e $(echo py${TRAVIS_PYTHON_VERSION} | tr -d .),coveralls
