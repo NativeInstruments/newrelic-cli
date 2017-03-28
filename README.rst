@@ -4,7 +4,7 @@ newrelic-cli A Python CLI client and library for New Relic's API
 .. image:: https://img.shields.io/travis/NativeInstruments/newrelic-cli.svg
     :target: https://travis-ci.org/NativeInstruments/newrelic-cli
 
-.. image:: https://img.shields.io/coveralls/newrelic-cli/newrelic-cli.svg
+.. image:: https://img.shields.io/coveralls/NativeInstruments/newrelic-cli.svg
     :target: https://coveralls.io/github/NativeInstruments/newrelic-cli
 
 .. image:: https://img.shields.io/pypi/l/newrelic-cli.svg
