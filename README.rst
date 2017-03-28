@@ -1,8 +1,17 @@
 newrelic-cli A Python CLI client and library for New Relic's API
 ================================================================
 
-.. image:: https://travis-ci.org/NativeInstruments/newrelic-cli.svg?branch=master
+.. image:: https://img.shields.io/travis/NativeInstruments/newrelic-cli.svg
     :target: https://travis-ci.org/NativeInstruments/newrelic-cli
+
+.. image:: https://img.shields.io/coveralls/newrelic-cli/newrelic-cli.svg
+    :target: https://coveralls.io/github/NativeInstruments/newrelic-cli
+
+.. image:: https://img.shields.io/pypi/l/newrelic-cli.svg
+    :target: https://github.com/NativeInstruments/newrelic-cli/blob/master/LICENSE
+
+.. image:: https://img.shields.io/pypi/v/newrelic-cli.svg
+    :target: https://pypi.python.org/pypi/newrelic-cli
 
 newrelic-cli allows setting up your New Relic monitors using simple CLI tool.
 Also it provides a set of libraries that can be easily integrated in other
