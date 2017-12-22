@@ -27,6 +27,44 @@ def merge_two_dicts(x, y):
     return z
 
 
+def upload_simple_monitors(api_key, config, filter='.*'):
+    """Uploads monitors to New Relic.
+        Filter is a regex, if no filters specified - all monitors are uploaded"""
+    synth_client = SyntheticsClient(api_key)
+    alert_client = AlertClient(api_key)
+    filter_re = re.compile('^{}$'.format(filter))
+    for monitor in config.monitors:
+        if not re.search(filter_re, monitor.name):
+            continue
+
+        if synth_client.get_monitor_by_name(monitor.name) is not None:
+            print('Monitor with name "{}" already exists, skip creating...'.format(monitor.name), end=' ')
+        else:
+            print('Creating simple monitor "{}"...'.format(monitor.name), end=' ')
+            synth_client.create_simple_monitor(
+                monitor.name,
+                monitor.type,
+                monitor.frequency,
+                monitor.uri,
+                monitor.locations,
+                monitor.status,
+                monitor.slaThreshold
+            )
+
+        if monitor.alert_policy is not None:
+            print('setting up alert...', end=' ')
+            try:
+                alert_client.create_synthetics_alert_condition(
+                    monitor.alert_policy,
+                    monitor.name,
+                    monitor.name,
+                    enabled=True
+                )
+            except ItemAlreadyExistsError:
+                print('alert is already present, skipping...', end=' ')
+        print('done.')
+
+
 def upload_monitors(api_key, config, filter='.*'):
     """Uploads monitors to New Relic.
     Filter is a regex, if no filters specified - all monitors are uploaded"""
@@ -40,7 +78,7 @@ def upload_monitors(api_key, config, filter='.*'):
         if synth_client.get_monitor_by_name(monitor.name) is not None:
             print(
                 'Monitor with name "{}" already exists, skip creating...'
-                .format(monitor.name),
+                    .format(monitor.name),
                 end=' '
             )
         else:
@@ -87,11 +125,11 @@ def upload_monitors(api_key, config, filter='.*'):
                 )
                 continue
 
-        try:
-            synth_client.upload_monitor_script(monitor.name, script)
-        except NewRelicException as e:
-            print("failed!\nERROR: {}".format(e))
-            continue
+            try:
+                synth_client.upload_monitor_script(monitor.name, script)
+            except NewRelicException as e:
+                print("failed!\nERROR: {}".format(e))
+                continue
 
         if monitor.alert_policy is not None:
             print('setting up alert...', end=' ')
@@ -142,7 +180,7 @@ def list_monitors(api_key, filter='.*'):
         print("  SLA Threshold: {}".format(monitor['slaThreshold']))
         print(
             "  Locations:\n    {}".
-            format('\n    '.join(monitor['locations']))
+                format('\n    '.join(monitor['locations']))
         )
     return
 
@@ -301,7 +339,7 @@ def main():
 
     parser = argparse.ArgumentParser(
         prog="{} {}".
-        format(os.path.basename(sys.argv[0]), args.function)
+            format(os.path.basename(sys.argv[0]), args.function)
     )
 
     # Generic arguments that should be added to all subcommands
