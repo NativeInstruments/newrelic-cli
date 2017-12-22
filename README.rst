@@ -51,7 +51,7 @@ in the following format:
     :code: yaml
 
 By default *newrelic-cli* will look for secrets config in the file:
-`~/.new_relic/secrets.yaml`. This setting can be overriden with `--secrets-file`
+`~/.new_relic/secret.yaml`. This setting can be overriden with `--secrets-file`
 command-line flag
 
 monitors

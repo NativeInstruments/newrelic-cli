@@ -307,6 +307,7 @@ def main():
         nargs="?",
         choices=[
             'upload-monitors',
+            'upload-simple-monitors',
             'delete-monitors',
             'list-monitors',
             'upload-alert-policies',
