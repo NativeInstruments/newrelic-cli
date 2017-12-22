@@ -10,6 +10,15 @@ monitors:
     alert_policy: PagerDuty
     script_file:
       name: "example/hello.js"
+  test_simple_ping:
+    name: Testing simple ping monitor
+    type: SIMPLE
+    frequency: 60
+    uri: https://www.example.com/
+    locations:
+        - AWS_US_WEST_1
+    status: disabled
+    alert_policy: Email Policy
   bar:
     name: I am a monitor with templated script
     type: SCRIPT_API
