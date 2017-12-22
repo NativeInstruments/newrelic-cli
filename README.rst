@@ -72,7 +72,7 @@ be unique. Inside of the definition the following fields are recognized:
 
  * `name` - optional name of the monitor. Must be unique.
    If not set - a label is used instead.
- * `type` - required monitor type. So far only `SCRIPT_API` is supported
+ * `type` - required monitor type.
  * `frequency` - required monitor check frequency in minutes. Must be one of 1, 5, 10, 15, 30, 60, 360, 720, or 1440 (this is a limitation on the New Relic side)
  * `locations` - required list of locations for checks.
    Full list of supported locations available in New Relic documentation:
@@ -102,6 +102,8 @@ Python package installs a runnable script called *newrelic-cli*.
 Currently the following actions are supported:
 
  * `upload-monitors` - uploads all monitors described in the configuration file.
+   Filter regex limiting scope can be supplied using `--filter` or `-f` options.
+ * `upload-simple-monitors` - uploads all simple monitors described in the configuration file.
    Filter regex limiting scope can be supplied using `--filter` or `-f` options.
  * `delete-monitos` - deletes all monitors that match filter provided in
    `--filter` or `-f` option. By default doesn't match on anything.

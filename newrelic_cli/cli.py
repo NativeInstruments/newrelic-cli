@@ -383,6 +383,14 @@ def main():
         #  chdir into cofnig file folder
         os.chdir(os.path.dirname(args.config_file.name))
         upload_monitors(secrets.api_key, config, args.filter)
+    elif args.function == 'upload-simple-monitors':
+        args = parser.parse_args(sub_args)
+        config = get_config(args.config_file)
+        secrets = get_secrets(args.secrets_file)
+        # As paths to the script files in config are relative
+        #  chdir into cofnig file folder
+        os.chdir(os.path.dirname(args.config_file.name))
+        upload_simple_monitors(secrets.api_key, config, args.filter)
     elif args.function == 'delete-monitors':
         args = parser.parse_args(sub_args)
         config = get_config(args.config_file)
