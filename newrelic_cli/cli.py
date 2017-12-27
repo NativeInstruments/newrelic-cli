@@ -27,6 +27,48 @@ def merge_two_dicts(x, y):
     return z
 
 
+def upload_simple_monitors(api_key, config, filter='.*'):
+    """Uploads simple monitors to New Relic.
+        Filter is a regex, if no filters specified - all monitors are uploaded"""
+    synth_client = SyntheticsClient(api_key)
+    alert_client = AlertClient(api_key)
+    filter_re = re.compile('^{}$'.format(filter))
+    for monitor in config.monitors:
+        if not re.search(filter_re, monitor.name):
+            continue
+
+        if hasattr(monitor, 'script_file'):
+            print('{} is not a simple monitor, skipping...'.format(monitor.name), end=' ')
+
+        else:
+            if synth_client.get_monitor_by_name(monitor.name) is not None:
+                print('Monitor with name "{}" already exists, skip creating...'.format(monitor.name), end=' ')
+            else:
+                print('Creating simple monitor "{}"...'.format(monitor.name), end=' ')
+                synth_client.create_simple_monitor(
+                    monitor.name,
+                    monitor.type,
+                    monitor.frequency,
+                    monitor.uri,
+                    monitor.locations,
+                    monitor.status,
+                    monitor.slaThreshold
+                )
+
+            if monitor.alert_policy is not None:
+                print('setting up alert...', end=' ')
+                try:
+                    alert_client.create_synthetics_alert_condition(
+                        monitor.alert_policy,
+                        monitor.name,
+                        monitor.name,
+                        enabled=True
+                    )
+                except ItemAlreadyExistsError:
+                    print('alert is already present, skipping...', end=' ')
+            print('done.')
+
+
 def upload_monitors(api_key, config, filter='.*'):
     """Uploads monitors to New Relic.
     Filter is a regex, if no filters specified - all monitors are uploaded"""
@@ -37,74 +79,74 @@ def upload_monitors(api_key, config, filter='.*'):
         if not re.search(filter_re, monitor.name):
             continue
 
-        if synth_client.get_monitor_by_name(monitor.name) is not None:
-            print(
-                'Monitor with name "{}" already exists, skip creating...'
-                .format(monitor.name),
-                end=' '
-            )
+        if hasattr(monitor, 'uri'):
+            print('{} is a simple monitor, skipping...'.format(monitor.name), end=' ')
+
         else:
-            print('Creating monitor "{}"...'.format(monitor.name), end=' ')
-            synth_client.create_monitor(
-                monitor.name,
-                monitor.type,
-                monitor.frequency,
-                monitor.locations,
-                monitor.status,
-                monitor.slaThreshold
-            )
-
-        print('uploading monitor script...', end=' ')
-        if monitor.script_file.template == 'jinja':
-            env = Environment(
-                loader=FileSystemLoader(os.path.abspath(os.curdir)),
-                undefined=StrictUndefined
-            )
-            try:
-                template = env.get_template(monitor.script_file.name)
-            except jinja_exceptions.TemplateNotFound as e:
-                print(
-                    'count not open script template for reading!\n'
-                    'ERROR: template {} not found.'.format(e)
-                )
-                continue
-
-            # Template's context should override existing values
-            #  set in global context
-            context = merge_two_dicts(
-                config.context,
-                monitor.script_file.context
-            )
-            script = template.render(context)
-        else:
-            try:
-                with open(monitor.script_file.name, 'r') as f:
-                    script = f.read()
-            except EnvironmentError as e:
-                print(
-                    'could not open script file for reading!\n'
-                    'ERROR: {}'.format(e)
-                )
-                continue
-
-        try:
-            synth_client.upload_monitor_script(monitor.name, script)
-        except NewRelicException as e:
-            print("failed!\nERROR: {}".format(e))
-            continue
-
-        if monitor.alert_policy is not None:
-            print('setting up alert...', end=' ')
-            try:
-                alert_client.create_synthetics_alert_condition(
-                    monitor.alert_policy,
+            if synth_client.get_monitor_by_name(monitor.name) is not None:
+                print('Monitor with name "{}" already exists, skip creating...'.format(monitor.name), end=' ')
+            else:
+                print('Creating monitor "{}"...'.format(monitor.name), end=' ')
+                synth_client.create_monitor(
                     monitor.name,
-                    monitor.name,
-                    enabled=True
+                    monitor.type,
+                    monitor.frequency,
+                    monitor.locations,
+                    monitor.status,
+                    monitor.slaThreshold
                 )
-            except ItemAlreadyExistsError:
-                print('alert is already present, skipping...', end=' ')
-        print('done.')
+
+            print('uploading monitor script...', end=' ')
+            if monitor.script_file.template == 'jinja':
+                env = Environment(
+                    loader=FileSystemLoader(os.path.abspath(os.curdir)),
+                    undefined=StrictUndefined
+                )
+                try:
+                    template = env.get_template(monitor.script_file.name)
+                except jinja_exceptions.TemplateNotFound as e:
+                    print(
+                        'count not open script template for reading!\n'
+                        'ERROR: template {} not found.'.format(e)
+                    )
+                    continue
+
+                # Template's context should override existing values
+                #  set in global context
+                context = merge_two_dicts(
+                    config.context,
+                    monitor.script_file.context
+                )
+                script = template.render(context)
+            else:
+                try:
+                    with open(monitor.script_file.name, 'r') as f:
+                        script = f.read()
+                except EnvironmentError as e:
+                    print(
+                        'could not open script file for reading!\n'
+                        'ERROR: {}'.format(e)
+                    )
+                    continue
+
+                try:
+                    synth_client.upload_monitor_script(monitor.name, script)
+                except NewRelicException as e:
+                    print("failed!\nERROR: {}".format(e))
+                    continue
+
+            if monitor.alert_policy is not None:
+                print('setting up alert...', end=' ')
+                try:
+                    alert_client.create_synthetics_alert_condition(
+                        monitor.alert_policy,
+                        monitor.name,
+                        monitor.name,
+                        enabled=True
+                    )
+                except ItemAlreadyExistsError:
+                    print('alert is already present, skipping...', end=' ')
+            print('done.')
 
 
 def delete_monitors(api_key, config, filter):
@@ -142,7 +184,7 @@ def list_monitors(api_key, filter='.*'):
         print("  SLA Threshold: {}".format(monitor['slaThreshold']))
         print(
             "  Locations:\n    {}".
-            format('\n    '.join(monitor['locations']))
+                format('\n    '.join(monitor['locations']))
         )
     return
 
@@ -265,6 +307,7 @@ def main():
         nargs="?",
         choices=[
             'upload-monitors',
+            'upload-simple-monitors',
             'delete-monitors',
             'list-monitors',
             'upload-alert-policies',
@@ -301,7 +344,7 @@ def main():
 
     parser = argparse.ArgumentParser(
         prog="{} {}".
-        format(os.path.basename(sys.argv[0]), args.function)
+            format(os.path.basename(sys.argv[0]), args.function)
     )
 
     # Generic arguments that should be added to all subcommands
@@ -345,6 +388,14 @@ def main():
         #  chdir into cofnig file folder
         os.chdir(os.path.dirname(args.config_file.name))
         upload_monitors(secrets.api_key, config, args.filter)
+    elif args.function == 'upload-simple-monitors':
+        args = parser.parse_args(sub_args)
+        config = get_config(args.config_file)
+        secrets = get_secrets(args.secrets_file)
+        # As paths to the script files in config are relative
+        #  chdir into cofnig file folder
+        os.chdir(os.path.dirname(args.config_file.name))
+        upload_simple_monitors(secrets.api_key, config, args.filter)
     elif args.function == 'delete-monitors':
         args = parser.parse_args(sub_args)
         config = get_config(args.config_file)

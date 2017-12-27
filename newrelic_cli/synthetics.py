@@ -72,6 +72,44 @@ class SyntheticsClient(NewRelicBaseClient):
         )
         return r.json()
 
+    def create_simple_monitor(self, name,
+                              type='SIMPLE',
+                              frequency=30,
+                              uri="https://www.example.com",
+                              locations=['AWS_US_WEST_1'],
+                              status='DISABLED',
+                              slaThreshold=None
+                              ):
+        """
+        Creates a monitor. If creation is successful -
+         the monitor object is returned
+        """
+        url = '{}/v3/monitors'.format(self.base_url)
+        payload = {
+            'name': name,
+            'type': type,
+            'frequency': frequency,
+            'uri': uri,
+            'locations': locations,
+            'status': status,
+        }
+        if slaThreshold:
+            payload['slaThreshold'] = slaThreshold
+
+        r = self._post(
+            url,
+            headers=self.default_headers,
+            timeout=self.timeout,
+            json=payload
+        )
+        location = r.headers['location']
+        r = self._get(
+            location,
+            headers=self.default_headers,
+            timeout=self.timeout
+        )
+        return r.json()
+
     def update_monitor(self, current_name,
                        new_name=None,
                        frequency=None,
@@ -166,7 +204,7 @@ class SyntheticsClient(NewRelicBaseClient):
         except ItemNotFoundError:
             raise ItemNotFoundError(
                 'Script for monitor {} not found'
-                .format(name)
+                    .format(name)
             )
         script_base64 = r.json()['scriptText']
         script = base64.b64decode(script_base64)
